@@ -5,12 +5,13 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
+import DeleteButton from './DeleteButton'
 
 type Props = {
   params: { id: string }
 }
 
-const TIME_LABELS: Record<string, string> = {
+const TIME_LABELS: { [key: string]: string } = {
   morning: '朝食',
   brunch: 'ブランチ',
   lunch: 'ランチ',
@@ -34,16 +35,28 @@ export default async function RecordDetailPage({ params }: Props) {
     <div className="max-w-lg mx-auto">
       {/* ヘッダー */}
       <div className="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
-        <div className="flex items-center gap-3">
-          <Link
-            href={`/prefecture/${record.prefecture_code}`}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 text-gray-600"
-          >
-            ←
-          </Link>
-          <h1 className="text-lg font-bold text-gray-900 truncate">
-            {record.restaurant_name}
-          </h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/prefecture/${record.prefecture_code}`}
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 text-gray-600"
+            >
+              ←
+            </Link>
+            <h1 className="text-lg font-bold text-gray-900 truncate">
+              {record.restaurant_name}
+            </h1>
+          </div>
+          {/* 編集・削除ボタン */}
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/record/${record.id}/edit`}
+              className="px-3 py-1.5 text-sm text-indigo-600 border border-indigo-300 rounded-xl"
+            >
+              編集
+            </Link>
+            <DeleteButton id={record.id} prefectureCode={record.prefecture_code} />
+          </div>
         </div>
       </div>
 
@@ -87,7 +100,6 @@ export default async function RecordDetailPage({ params }: Props) {
           )}
         </div>
 
-        {/* 区切り線 */}
         <hr className="border-gray-100" />
 
         {/* 訪問情報 */}
@@ -128,7 +140,6 @@ export default async function RecordDetailPage({ params }: Props) {
           </>
         )}
 
-        {/* 記録日 */}
         <p className="text-xs text-gray-400 text-right">
           記録: {format(new Date(record.created_at), 'yyyy/M/d HH:mm')}
         </p>
