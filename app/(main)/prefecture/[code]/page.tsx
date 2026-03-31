@@ -3,15 +3,20 @@ import { getPrefectureByCode } from '@/lib/prefecture'
 import RecordCard from '@/components/RecordCard'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import SortToggle from './SortToggle'
 
 type Props = {
   params: { code: string }
+  searchParams: { sort?: string }
 }
 
-export default async function PrefecturePage({ params }: Props) {
+export default async function PrefecturePage({ params, searchParams }: Props) {
   const { code } = params
   const prefecture = getPrefectureByCode(code)
   if (!prefecture) notFound()
+
+  // sort=asc のとき古い順、それ以外は新しい順
+  const sortOrder = searchParams.sort === 'asc' ? 'asc' : 'desc'
 
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -21,7 +26,7 @@ export default async function PrefecturePage({ params }: Props) {
     .select('*')
     .eq('user_id', user?.id ?? '')
     .eq('prefecture_code', code)
-    .order('visited_date', { ascending: false })
+    .order('visited_date', { ascending: sortOrder === 'asc' })
 
   return (
     <div className="max-w-lg mx-auto">
@@ -34,10 +39,16 @@ export default async function PrefecturePage({ params }: Props) {
           >
             ←
           </Link>
-          <div>
+          <div className="flex-1">
             <h1 className="text-lg font-bold text-gray-900">{prefecture.name}</h1>
             <p className="text-xs text-gray-500">{records?.length ?? 0}件の記録</p>
           </div>
+          {/* 並び替えトグル */}
+          {records && records.length > 1 && (
+            <div className="w-36">
+              <SortToggle code={code} current={sortOrder} />
+            </div>
+          )}
         </div>
       </div>
 
