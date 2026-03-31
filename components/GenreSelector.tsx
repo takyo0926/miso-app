@@ -41,20 +41,38 @@ export default function GenreSelector({ value, onChange }: Props) {
     <div className="space-y-3">
       {/* ジャンルボタン一覧 */}
       <div className="flex flex-wrap gap-2">
-        {allGenres.map((g) => (
-          <button
-            key={g}
-            type="button"
-            onClick={() => toggle(g)}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              value.includes(g)
-                ? 'bg-indigo-500 text-white'
-                : 'bg-indigo-50 text-indigo-700'
-            }`}
-          >
-            {value.includes(g) ? `✓ ${g}` : g}
-          </button>
-        ))}
+        {allGenres.map((g) => {
+          const isCustom = !DEFAULT_GENRES.includes(g)
+          const isSelected = value.includes(g)
+          return (
+            <div key={g} className="relative flex items-center">
+              <button
+                type="button"
+                onClick={() => toggle(g)}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  isSelected
+                    ? 'bg-indigo-500 text-white'
+                    : 'bg-indigo-50 text-indigo-700'
+                } ${isCustom ? 'pr-7' : ''}`}
+              >
+                {isSelected ? `✓ ${g}` : g}
+              </button>
+              {/* カスタムジャンルのみ削除ボタンを表示 */}
+              {isCustom && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onChange(value.filter((v) => v !== g))
+                  }}
+                  className="absolute right-1.5 text-xs text-indigo-400 hover:text-red-500 font-bold"
+                  aria-label={`${g}を削除`}
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          )
+        })}
       </div>
 
       {/* カスタムジャンル追加 */}
