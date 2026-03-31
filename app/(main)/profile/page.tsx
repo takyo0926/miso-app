@@ -1,11 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import DisplayNameForm from '@/components/DisplayNameForm'
 
 export default async function ProfilePage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // ログアウト処理
   const handleSignOut = async () => {
     'use server'
     const supabase = createClient()
@@ -13,7 +13,6 @@ export default async function ProfilePage() {
     redirect('/login')
   }
 
-  // 統計情報を取得
   const { data: records } = await supabase
     .from('records')
     .select('prefecture_code, rating')
@@ -25,24 +24,27 @@ export default async function ProfilePage() {
     ? (records.reduce((sum, r) => sum + (r.rating ?? 0), 0) / records.length).toFixed(1)
     : '-'
 
+  const displayName = (user?.user_metadata?.display_name as string) ?? ''
+
   return (
     <div className="max-w-lg mx-auto">
-      {/* ヘッダー */}
       <div className="bg-white px-4 pt-12 pb-4 border-b border-gray-100">
         <h1 className="text-xl font-bold text-gray-900">プロフィール</h1>
       </div>
 
       <div className="px-4 py-6 space-y-6">
-        {/* ユーザー情報 */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-100">
+        {/* ユーザー情報・名前編集 */}
+        <div className="bg-white rounded-2xl p-4 border border-gray-100 space-y-4">
           <div className="flex items-center gap-3">
             <div className="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center text-2xl">
               👤
             </div>
-            <div>
-              <p className="font-semibold text-gray-900">{user?.email}</p>
-              <p className="text-xs text-gray-500 mt-0.5">みそマップユーザー</p>
-            </div>
+            <p className="text-sm text-gray-500">{user?.email}</p>
+          </div>
+          {/* 表示名の編集 */}
+          <div>
+            <p className="text-xs text-gray-500 mb-2">マップの名前</p>
+            <DisplayNameForm currentName={displayName} />
           </div>
         </div>
 
@@ -62,7 +64,7 @@ export default async function ProfilePage() {
           </div>
         </div>
 
-        {/* ログアウトボタン */}
+        {/* ログアウト */}
         <form action={handleSignOut}>
           <button
             type="submit"

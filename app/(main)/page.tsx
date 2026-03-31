@@ -21,6 +21,8 @@ export default async function HomePage() {
 
   const totalCount = records?.length ?? 0
   const visitedCount = Object.keys(countMap).length
+  const displayName = (user?.user_metadata?.display_name as string) ?? ''
+  const mapTitle = displayName ? `${displayName}マップ` : 'みそマップ'
 
   return (
     <div className="max-w-lg mx-auto">
@@ -28,7 +30,7 @@ export default async function HomePage() {
       <div className="bg-white px-4 pt-12 pb-4 sticky top-0 z-10 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">みそマップ 🗾</h1>
+            <h1 className="text-xl font-bold text-gray-900">{mapTitle} 🗾</h1>
             <p className="text-xs text-gray-500 mt-0.5">
               {visitedCount}都道府県 / {totalCount}件の記録
             </p>
