@@ -1,7 +1,14 @@
 import RecordForm from '@/components/RecordForm'
 import Link from 'next/link'
 
-export default function NewRecordPage() {
+type Props = {
+  searchParams: { prefecture?: string }
+}
+
+export default function NewRecordPage({ searchParams }: Props) {
+  // 都道府県ページから来た場合はそのコードをデフォルトに
+  const defaultPrefecture = searchParams.prefecture ?? 'JP-13'
+
   return (
     <div className="max-w-lg mx-auto">
       {/* ヘッダー */}
@@ -17,7 +24,7 @@ export default function NewRecordPage() {
         </div>
       </div>
 
-      <RecordForm />
+      <RecordForm defaultPrefectureCode={defaultPrefecture} />
     </div>
   )
 }

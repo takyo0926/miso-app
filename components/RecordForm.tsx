@@ -45,7 +45,11 @@ async function resizeImage(file: File): Promise<Blob> {
   })
 }
 
-export default function RecordForm() {
+type Props = {
+  defaultPrefectureCode?: string
+}
+
+export default function RecordForm({ defaultPrefectureCode = 'JP-13' }: Props) {
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -57,7 +61,7 @@ export default function RecordForm() {
   const [timeOfDay, setTimeOfDay] = useState('lunch')
   const [rating, setRating] = useState(3)
   const [notes, setNotes] = useState('')
-  const [prefectureCode, setPrefectureCode] = useState('JP-13')
+  const [prefectureCode, setPrefectureCode] = useState(defaultPrefectureCode)
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
