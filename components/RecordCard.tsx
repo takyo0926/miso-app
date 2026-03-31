@@ -62,11 +62,11 @@ export default function RecordCard({ record }: Props) {
             </div>
 
             <div className="flex flex-wrap gap-1 mt-1.5">
-              {record.genre && (
-                <span className="text-xs px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full">
-                  {record.genre}
+              {record.genre && record.genre.split(',').map((g: string) => (
+                <span key={g} className="text-xs px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full">
+                  {g}
                 </span>
-              )}
+              ))}
               {record.time_of_day && (
                 <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
                   {TIME_LABELS[record.time_of_day] ?? record.time_of_day}

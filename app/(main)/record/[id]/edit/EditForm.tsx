@@ -5,12 +5,7 @@ import { useRouter } from 'next/navigation'
 import { PREFECTURES } from '@/lib/prefecture'
 import StarRating from '@/components/StarRating'
 import { updateRecord } from '@/app/actions/record'
-
-const GENRES = [
-  'ラーメン', '寿司', '焼肉', '居酒屋', 'カフェ', 'イタリアン',
-  'フレンチ', '中華', '和食', 'ファミレス', '洋食', 'カレー',
-  'うどん・そば', '焼き鳥', '天ぷら', 'その他',
-]
+import GenreSelector from '@/components/GenreSelector'
 
 const TIME_OPTIONS = [
   { value: 'morning', label: '朝食' },
@@ -36,7 +31,9 @@ type Props = {
 export default function EditForm({ record }: Props) {
   const router = useRouter()
   const [restaurantName, setRestaurantName] = useState(record.restaurant_name)
-  const [genre, setGenre] = useState(record.genre ?? '')
+  const [genres, setGenres] = useState<string[]>(
+    record.genre ? record.genre.split(',') : []
+  )
   const [visitedDate, setVisitedDate] = useState(record.visited_date)
   const [timeOfDay, setTimeOfDay] = useState(record.time_of_day ?? 'lunch')
   const [rating, setRating] = useState(record.rating ?? 3)
@@ -52,7 +49,7 @@ export default function EditForm({ record }: Props) {
 
     const result = await updateRecord(record.id, {
       restaurant_name: restaurantName,
-      genre: genre || null,
+      genre: genres.length > 0 ? genres.join(',') : null,
       photo_url: record.photo_url,
       visited_date: visitedDate,
       time_of_day: timeOfDay,
@@ -86,23 +83,10 @@ export default function EditForm({ record }: Props) {
         />
       </div>
 
-      {/* ジャンル */}
+      {/* ジャンル（複数選択・カスタム追加可） */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">ジャンル</label>
-        <div className="flex flex-wrap gap-2">
-          {GENRES.map((g) => (
-            <button
-              key={g}
-              type="button"
-              onClick={() => setGenre(genre === g ? '' : g)}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                genre === g ? 'bg-indigo-500 text-white' : 'bg-indigo-50 text-indigo-700'
-              }`}
-            >
-              {g}
-            </button>
-          ))}
-        </div>
+        <GenreSelector value={genres} onChange={setGenres} />
       </div>
 
       {/* 都道府県 */}
